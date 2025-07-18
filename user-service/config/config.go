@@ -7,7 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var cfg AppConfig
+var Cfg AppConfig
 
 type AppConfig struct {
 	Port                  int      `json:"port"`
@@ -34,10 +34,10 @@ type Database struct {
 }
 
 func Init() {
-	err := util.BindFromJSON(&cfg, "config.json", ".")
+	err := util.BindFromJSON(&Cfg, "config.json", ".")
 	if err != nil {
 		logrus.Infof("failed to bind config: %v", err)
-		err = util.BindFromConsul(&cfg, os.Getenv("CONSUL_HTTP_URL"), os.Getenv("CONSUL_HTTP_KEY"))
+		err = util.BindFromConsul(&Cfg, os.Getenv("CONSUL_HTTP_URL"), os.Getenv("CONSUL_HTTP_KEY"))
 		if err != nil {
 			panic(err)
 		}
