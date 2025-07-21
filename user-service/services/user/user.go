@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"time"
 	"user-service/config"
@@ -65,7 +66,7 @@ func (s *UserService) Login(ctx context.Context, req *dto.LoginRequest) (*dto.Lo
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString([]byte(config.Cfg.JWTSecretKey))
 	if err != nil {
 		return nil, err
@@ -81,7 +82,7 @@ func (s *UserService) Login(ctx context.Context, req *dto.LoginRequest) (*dto.Lo
 
 func (s *UserService) Register(ctx context.Context, req *dto.RegisterRequest) (*dto.RegisterResponse, error) {
 	checkEmail, err := s.repository.GetUser().FindByEmail(ctx, req.Email)
-	if err != nil {
+	if err != nil && !errors.Is(err, errConstant.ErrUserNotFound) {
 		return nil, err
 	}
 	if checkEmail != nil {
@@ -89,7 +90,7 @@ func (s *UserService) Register(ctx context.Context, req *dto.RegisterRequest) (*
 	}
 
 	checkUsername, err := s.repository.GetUser().FindByUsername(ctx, req.Username)
-	if err != nil {
+	if err != nil && !errors.Is(err, errConstant.ErrUserNotFound) {
 		return nil, err
 	}
 	if checkUsername != nil {
@@ -143,7 +144,7 @@ func (s *UserService) Update(ctx context.Context, req *dto.UpdateRequest, uuid s
 
 	if req.Email != getUser.Email {
 		checkEmail, err := s.repository.GetUser().FindByEmail(ctx, req.Email)
-		if err != nil {
+		if err != nil && !errors.Is(err, errConstant.ErrUserNotFound) {
 			return nil, err
 		}
 		if checkEmail != nil {

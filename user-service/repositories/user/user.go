@@ -73,7 +73,6 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*models
 		}
 		return nil, errWrap.WrapError(errConstant.ErrSQLError)
 	}
-
 	return &user, nil
 }
 
