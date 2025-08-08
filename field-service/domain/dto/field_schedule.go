@@ -8,13 +8,13 @@ import (
 )
 
 type FieldScheduleRequest struct {
-	FieldID uint     `json:"fieldID" validate:"required"`
+	FieldID string   `json:"fieldID" validate:"required"`
 	TimeIDs []string `json:"TimeIDs" validate:"required"`
 	Date    string   `json:"date" validate:"required"`
 }
 
 type GenerateFieldScheduleOneMonthRequest struct {
-	FieldID uint `json:"fieldID" validate:"required"`
+	FieldID string `json:"fieldID" validate:"required"`
 }
 
 type UpdateFieldScheduleRequest struct {

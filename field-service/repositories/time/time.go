@@ -18,7 +18,7 @@ type TimeRepository struct {
 
 type ITimeRepository interface {
 	FindAll(context.Context) ([]models.Time, error)
-	FindByUUID(context.Context, string) ([]models.Time, error)
+	FindByUUID(context.Context, string) (*models.Time, error)
 	FindID(context.Context, int) ([]models.Time, error)
 	Create(context.Context, *models.Time) (*models.Time, error)
 }
@@ -40,9 +40,9 @@ func (t *TimeRepository) FindAll(ctx context.Context) ([]models.Time, error) {
 	return times, err
 }
 
-func (t *TimeRepository) FindByUUID(ctx context.Context, uuid string) ([]models.Time, error) {
-	var times []models.Time
-	err := t.db.WithContext(ctx).Where("uuid = ?", uuid).Find(&times).Error
+func (t *TimeRepository) FindByUUID(ctx context.Context, uuid string) (*models.Time, error) {
+	var times models.Time
+	err := t.db.WithContext(ctx).Where("uuid = ?", uuid).First(&times).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errWrap.WrapError(errTime.ErrTimeNotFound)
@@ -50,7 +50,7 @@ func (t *TimeRepository) FindByUUID(ctx context.Context, uuid string) ([]models.
 		return nil, errWrap.WrapError(errConstant.ErrSQLError)
 	}
 
-	return times, err
+	return &times, err
 }
 
 func (t *TimeRepository) FindID(ctx context.Context, id int) ([]models.Time, error) {
