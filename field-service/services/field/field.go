@@ -23,7 +23,7 @@ type FieldService struct {
 
 type IfieldService interface {
 	GetAllWithPagination(context.Context, *dto.FieldRequestParam) (*util.PaginationResult, error)
-	GetAllWithoutPagination(context.Context, *dto.FieldRequestParam) ([]dto.FieldResponse, error)
+	GetAllWithoutPagination(context.Context) ([]dto.FieldResponse, error)
 	GetByUUID(context.Context, string) (*dto.FieldResponse, error)
 	Create(context.Context, *dto.FieldRequest) (*dto.FieldResponse, error)
 	Update(context.Context, string, *dto.UpdateFieldRequest) (*dto.FieldResponse, error)
@@ -64,7 +64,7 @@ func (s *FieldService) GetAllWithPagination(ctx context.Context, req *dto.FieldR
 	return &response, nil
 }
 
-func (s *FieldService) GetAllWithoutPagination(ctx context.Context, req *dto.FieldRequestParam) ([]dto.FieldResponse, error) {
+func (s *FieldService) GetAllWithoutPagination(ctx context.Context) ([]dto.FieldResponse, error) {
 	fields, err := s.repository.GetField().FindAllWithoutPagination(ctx)
 	if err != nil {
 		return nil, err
@@ -103,7 +103,7 @@ func (s *FieldService) GetByUUID(ctx context.Context, uuid string) (*dto.FieldRe
 }
 
 func (s *FieldService) validateUpload(images []multipart.FileHeader) error {
-	if images == nil || len(images) == 0 {
+	if len(images) <= 0 {
 		return errConstant.ErrInvalidUploadFile
 	}
 
