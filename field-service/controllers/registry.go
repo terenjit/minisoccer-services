@@ -17,7 +17,7 @@ type IControllerRegistry interface {
 	GetTime() controllersT.ITimeController
 }
 
-func NewServiceRegistry(service services.IServiceRegistry) IControllerRegistry {
+func NewControllerRegistry(service services.IServiceRegistry) IControllerRegistry {
 	return &Registry{service: service}
 }
 

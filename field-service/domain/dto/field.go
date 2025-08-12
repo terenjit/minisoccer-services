@@ -8,17 +8,17 @@ import (
 )
 
 type FieldRequest struct {
-	Code         string                 `json:"code" validate:"required"`
-	Name         string                 `json:"name" validate:"required"`
-	PricePerHour int                    `json:"pricePerHour" validate:"required"`
-	Images       []multipart.FileHeader `json:"images" validate:"required"`
+	Code         string                 `form:"code" validate:"required"`
+	Name         string                 `form:"name" validate:"required"`
+	PricePerHour int                    `form:"pricePerHour" validate:"required"`
+	Images       []multipart.FileHeader `form:"images" validate:"required"`
 }
 
 type UpdateFieldRequest struct {
-	Code         string                 `json:"code" validate:"required"`
-	Name         string                 `json:"name" validate:"required"`
-	PricePerHour int                    `json:"pricePerHour" validate:"required"`
-	Images       []multipart.FileHeader `json:"images"`
+	Code         string                 `form:"code" validate:"required"`
+	Name         string                 `form:"name" validate:"required"`
+	PricePerHour int                    `form:"pricePerHour" validate:"required"`
+	Images       []multipart.FileHeader `form:"images"`
 }
 
 type FieldResponse struct {
