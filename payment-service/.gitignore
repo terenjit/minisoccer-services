@@ -2,4 +2,5 @@
 bin
 
 .env
+.DS_Store
 config.json
