@@ -29,6 +29,14 @@ var mapStatusIntToString = map[PaymentStatus]PaymentStatusString{
 	Expire:     ExpireString,
 }
 
+func (p PaymentStatus) String() string {
+	return string(p.GetStatusString())
+}
+
+func (p PaymentStatusString) Int() int {
+	return int(p.GetStatusInt())
+}
+
 func (p PaymentStatus) GetStatusString() PaymentStatusString {
 	return mapStatusIntToString[p]
 }

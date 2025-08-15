@@ -14,6 +14,7 @@ type Registry struct {
 type IRepositoryRegistry interface {
 	GetPayment() repositoriesP.IPaymentRepository
 	GetPaymentHistory() repositoriesPH.IPaymentHistoryRepository
+	GetTx() *gorm.DB
 }
 
 func NewRepositoryRegistry(db *gorm.DB) IRepositoryRegistry {
@@ -28,4 +29,8 @@ func (r *Registry) GetPayment() repositoriesP.IPaymentRepository {
 
 func (r *Registry) GetPaymentHistory() repositoriesPH.IPaymentHistoryRepository {
 	return repositoriesPH.NewPaymentHistoryRepository(r.db)
+}
+
+func (r *Registry) GetTx() *gorm.DB {
+	return r.db
 }

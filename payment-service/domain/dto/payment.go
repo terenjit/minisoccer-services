@@ -61,10 +61,11 @@ type PaymentResponse struct {
 	Description   *string                       `json:"description"`
 	PaidAt        *time.Time                    `json:"paidAt"`
 	CreatedAt     *time.Time                    `json:"createdAt"`
+	ExpireddAt    *time.Time                    `json:"expiredAt"`
 	UpdatedAt     *time.Time                    `json:"updatedAt"`
 }
 
-type webhook struct {
+type Webhook struct {
 	VANumbers         []VANumber                    `json:"va_numbers"`
 	TransactionTime   string                        `json:"transaction_time"`
 	TransactionStatus constants.PaymentStatusString `json:"transaction_status"`
