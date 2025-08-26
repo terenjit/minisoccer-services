@@ -15,7 +15,7 @@ type PaymentData struct {
 	Amount        float64   `json:"amount"`
 	Status        string    `json:"status"`
 	PaymentLink   string    `json:"paymentLink"`
-	Invoice       *string   `json:"invoiceLink,omitempty"`
+	InvoiceLink   *string   `json:"invoiceLink,omitempty"`
 	Description   *string   `json:"description"`
 	VaNumber      *string   `json:"vaNumber,omitempty"`
 	Bank          *string   `json:"bank,omitempty"`
