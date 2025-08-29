@@ -11,7 +11,7 @@ import (
 
 type (
 	TopicName string
-	Handler   func(c context.Context, message *sarama.ConsumerMessage) error
+	Handler   func(ctx context.Context, message *sarama.ConsumerMessage) error
 )
 
 type ConsumerGroup struct {
@@ -32,9 +32,8 @@ func (c *ConsumerGroup) Cleanup(sarama sarama.ConsumerGroupSession) error {
 	return nil
 }
 
-func (c *ConsumerGroup) ConsumerClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
+func (c *ConsumerGroup) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
 	messages := claim.Messages()
-
 	for message := range messages {
 		handler, ok := c.handler[TopicName(message.Topic)]
 		if !ok {
@@ -49,6 +48,7 @@ func (c *ConsumerGroup) ConsumerClaim(session sarama.ConsumerGroupSession, claim
 			if err == nil {
 				break
 			}
+
 			logrus.Errorf("error handling message pn %s, attempt %d: %v", message.Topic, attempt, err)
 			if attempt == maxRetry {
 				logrus.Errorf("max retry reached, message will be ignored")
@@ -57,11 +57,11 @@ func (c *ConsumerGroup) ConsumerClaim(session sarama.ConsumerGroupSession, claim
 
 		if err != nil {
 			logrus.Errorf("error handling message on %s: %v", message.Topic, err)
+			session.MarkMessage(message, err.Error())
 			break
 		}
 		session.MarkMessage(message, time.Now().UTC().String())
 	}
-
 	return nil
 }
 

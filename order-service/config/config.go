@@ -15,7 +15,7 @@ type AppConfig struct {
 	AppEnv                     string          `json:"appEnv"`
 	SignatureKey               string          `json:"signatureKey"`
 	Database                   Database        `json:"database"`
-	RateLimiterMaxRequest      int             `json:"rateLimiterMaxRequest"`
+	RateLimiterMaxRequest      float64         `json:"rateLimiterMaxRequest"`
 	RateLimiterTimeSecond      int             `json:"rateLimiterTimeSecond"`
 	InternalService            InternalService `json:"internalService"`
 	GcsType                    string          `json:"gcsType"`
@@ -68,9 +68,9 @@ type Kafka struct {
 	Brokers               []string `json:"brokers"`
 	TimeoutInMs           int      `json:"timeoutInMs"`
 	MaxRetry              int      `json:"maxRetry"`
-	MaxWaitTimeInMs       string   `json:"maxWaitTimeInMs"`
-	MaxProcessingTimeInMs string   `json:"maxProcessingTimeInMs"`
-	BackoffTimeInMs       string   `json:"backoffTimeInMs"`
+	MaxWaitTimeInMs       int      `json:"maxWaitTimeInMs"`
+	MaxProcessingTimeInMs int      `json:"maxProcessingTimeInMs"`
+	BackoffTimeInMs       int      `json:"backoffTimeInMs"`
 	Topic                 []string `json:"topics"`
 	GroupID               string   `json:"groupID"`
 }
