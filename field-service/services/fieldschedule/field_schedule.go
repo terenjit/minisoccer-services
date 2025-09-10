@@ -129,9 +129,10 @@ func (s *FieldScheduleService) GetByUUID(ctx context.Context, uuid string) (*dto
 	FieldSchedulesResult.FieldName = FieldSchedule.Field.Name
 	FieldSchedulesResult.PricePerHour = FieldSchedule.Field.PricePerHour
 	FieldSchedulesResult.Date = s.converOneMonthName(FieldSchedule.Date.Format(time.DateOnly))
-	FieldSchedulesResult.Status = FieldSchedulesResult.Status.GetStatusInt().GetStatusString()
+	FieldSchedulesResult.Status = FieldSchedule.Status.GetStatusString()
 	FieldSchedulesResult.CreatedAt = FieldSchedule.CreatedAt
 	FieldSchedulesResult.UpdateAt = FieldSchedule.UpdatdeAt
+	FieldSchedulesResult.Time = fmt.Sprintf("%s - %s", FieldSchedule.Time.StartTime, FieldSchedule.Time.EndTime)
 
 	return FieldSchedulesResult, nil
 

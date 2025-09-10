@@ -12,5 +12,5 @@ type Time struct {
 	StartTime string    `gorm:"type:time without time zone;not null"`
 	EndTime   string    `gorm:"type:time without time zone;not null"`
 	CreatedAt *time.Time
-	UpdatdeAt *time.Time
+	UpdatedAt *time.Time
 }

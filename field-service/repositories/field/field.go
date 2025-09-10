@@ -11,6 +11,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -98,6 +99,10 @@ func (f *FieldRepository) Create(ctx context.Context, req *models.Field) (*model
 		Name:         req.Name,
 		Images:       req.Images,
 		PricePerHour: req.PricePerHour,
+	}
+
+	if field.Images == nil {
+		field.Images = pq.StringArray{}
 	}
 
 	err := f.db.WithContext(ctx).Create(&field).Error

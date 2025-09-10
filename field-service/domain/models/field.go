@@ -13,9 +13,9 @@ type Field struct {
 	Code          string         `gorm:"type:varchar(15);not null"`
 	Name          string         `gorm:"type:varchar(255);not null"`
 	PricePerHour  int            `gorm:"type:int;not null"`
-	Images        pq.StringArray `gorm:"type:text[];not null"`
+	Images        pq.StringArray `gorm:"type:text[];not null;default:'{}'"`
 	CreatedAt     *time.Time
-	UpdatdeAt     *time.Time
+	UpdatedAt     *time.Time
 	DeletedAt     *time.Time
 	FieldSchedule []FieldSchedule `gorm:"foreignKey:field_id;references:id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }

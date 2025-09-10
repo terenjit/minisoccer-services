@@ -28,13 +28,27 @@ func NewFieldRoute(controller controllers.IControllerRegistry, group *gin.Router
 }
 
 func (f *FieldRoute) Run() {
-	group := f.group.Group("/field").Use(middlewares.AuthenticateWithoutToken())
-	group.GET("", f.controller.GetField().GetAllWithoutPagination)
-	group.GET("/:uuid", f.controller.GetField().GetByUUID)
-	group.Use(middlewares.Authenticate())
-	group.GET("/pagination", middlewares.CheckRole([]string{constants.Admin, constants.Customer}, f.client), f.controller.GetField().GetAllWithPagination)
-	group.POST("/create", middlewares.CheckRole([]string{constants.Admin, constants.Customer}, f.client), f.controller.GetField().Create)
-	group.PUT("/:uuid", middlewares.CheckRole([]string{constants.Admin, constants.Customer}, f.client), f.controller.GetField().Update)
-	group.DELETE("/:uuid", middlewares.CheckRole([]string{constants.Admin, constants.Customer}, f.client), f.controller.GetField().Delete)
+	// Public routes (no token required)
+	publicGroup := f.group.Group("/field").Use(middlewares.AuthenticateWithoutToken())
+	publicGroup.GET("", f.controller.GetField().GetAllWithoutPagination)
+	publicGroup.GET("/:uuid", f.controller.GetField().GetByUUID)
 
+	// Protected routes (authentication + role check)
+	protectedGroup := f.group.Group("/field").Use(middlewares.Authenticate())
+	protectedGroup.GET("/pagination",
+		middlewares.CheckRole([]string{constants.Admin, constants.Customer}, f.client),
+		f.controller.GetField().GetAllWithPagination,
+	)
+	protectedGroup.POST("/create",
+		middlewares.CheckRole([]string{constants.Admin, constants.Customer}, f.client),
+		f.controller.GetField().Create,
+	)
+	protectedGroup.PUT("/:uuid",
+		middlewares.CheckRole([]string{constants.Admin, constants.Customer}, f.client),
+		f.controller.GetField().Update,
+	)
+	protectedGroup.DELETE("/:uuid",
+		middlewares.CheckRole([]string{constants.Admin, constants.Customer}, f.client),
+		f.controller.GetField().Delete,
+	)
 }

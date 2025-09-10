@@ -35,7 +35,7 @@ func (s *TimeService) GetAll(ctx context.Context) ([]dto.TimeResponse, error) {
 			StartTime: time.StartTime,
 			EndTime:   time.EndTime,
 			CreatedAt: time.CreatedAt,
-			UpdateAt:  time.UpdatdeAt,
+			UpdateAt:  time.UpdatedAt,
 		})
 	}
 
@@ -54,7 +54,7 @@ func (s *TimeService) GetByUUID(ctx context.Context, id string) (*dto.TimeRespon
 		StartTime: time.StartTime,
 		EndTime:   time.EndTime,
 		CreatedAt: time.CreatedAt,
-		UpdateAt:  time.UpdatdeAt,
+		UpdateAt:  time.UpdatedAt,
 	}
 
 	return &timeResult, nil
@@ -77,7 +77,7 @@ func (s *TimeService) Create(ctx context.Context, req *dto.TimeRequest) (*dto.Ti
 		StartTime: time.StartTime,
 		EndTime:   time.EndTime,
 		CreatedAt: time.CreatedAt,
-		UpdateAt:  time.UpdatdeAt,
+		UpdateAt:  time.UpdatedAt,
 	}
 
 	return &timeResult, nil

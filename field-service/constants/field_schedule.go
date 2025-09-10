@@ -7,8 +7,8 @@ const (
 	Available FieldScheduleStatus = 100
 	Booked    FieldScheduleStatus = 200
 
-	AvailableString FieldScheduleStatusName = "available"
-	BookedString    FieldScheduleStatusName = "booked"
+	AvailableString FieldScheduleStatusName = "Available"
+	BookedString    FieldScheduleStatusName = "Booked"
 )
 
 var mapFieldScheduleStatusIntToString = map[FieldScheduleStatus]FieldScheduleStatusName{

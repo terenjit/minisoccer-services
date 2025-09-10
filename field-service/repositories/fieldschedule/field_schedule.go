@@ -103,7 +103,7 @@ func (f *FieldScheduleRepository) FindByDateAndTimeId(ctx context.Context, date 
 	err := f.db.WithContext(ctx).Where("date = ?", date).Where("time_id = ?", timeId).Where("field_id = ?", fieldId).First(&field).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errWrap.WrapError(errFieldSchedule.ErrFieldScheduleNotFound)
+			return nil, nil
 		}
 		return nil, errWrap.WrapError(errConstant.ErrSQLError)
 	}

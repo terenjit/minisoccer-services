@@ -14,6 +14,10 @@ import (
 	"mime/multipart"
 	"path"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 )
 
 type FieldService struct {
@@ -49,7 +53,7 @@ func (s *FieldService) GetAllWithPagination(ctx context.Context, req *dto.FieldR
 			PricePerHour: field.PricePerHour,
 			Images:       field.Images,
 			CreatedAt:    field.CreatedAt,
-			UpdateAt:     field.UpdatdeAt,
+			UpdateAt:     field.UpdatedAt,
 		})
 	}
 
@@ -96,7 +100,7 @@ func (s *FieldService) GetByUUID(ctx context.Context, uuid string) (*dto.FieldRe
 	fieldsResult.PricePerHour = field.PricePerHour
 	fieldsResult.Images = field.Images
 	fieldsResult.CreatedAt = field.CreatedAt
-	fieldsResult.UpdateAt = field.UpdatdeAt
+	fieldsResult.UpdateAt = field.UpdatedAt
 
 	return fieldsResult, nil
 
@@ -163,9 +167,10 @@ func (s *FieldService) Create(ctx context.Context, req *dto.FieldRequest) (*dto.
 		Code:         req.Code,
 		Name:         req.Name,
 		PricePerHour: req.PricePerHour,
-		Images:       imageUrl,
+		Images:       pq.StringArray(imageUrl),
 	})
 	if err != nil {
+		logrus.Errorf("error create field: %v", err)
 		return nil, err
 	}
 
@@ -176,16 +181,16 @@ func (s *FieldService) Create(ctx context.Context, req *dto.FieldRequest) (*dto.
 		PricePerHour: field.PricePerHour,
 		Images:       field.Images,
 		CreatedAt:    field.CreatedAt,
-		UpdateAt:     field.UpdatdeAt,
+		UpdateAt:     field.UpdatedAt,
 	}
 
 	return response, nil
 
 }
-func (s *FieldService) Update(ctx context.Context, uuid string, req *dto.UpdateFieldRequest) (*dto.FieldResponse, error) {
+func (s *FieldService) Update(ctx context.Context, uuidParam string, req *dto.UpdateFieldRequest) (*dto.FieldResponse, error) {
 	var image []string
 
-	field, err := s.repository.GetField().FindByUUID(ctx, uuid)
+	field, err := s.repository.GetField().FindByUUID(ctx, uuidParam)
 	if err != nil {
 		return nil, err
 	}
@@ -200,7 +205,7 @@ func (s *FieldService) Update(ctx context.Context, uuid string, req *dto.UpdateF
 		image = append(image, imageUrl...)
 	}
 
-	field, err = s.repository.GetField().Update(ctx, uuid, &models.Field{
+	field, err = s.repository.GetField().Update(ctx, uuidParam, &models.Field{
 		Code:         req.Code,
 		Name:         req.Name,
 		PricePerHour: req.PricePerHour,
@@ -209,15 +214,15 @@ func (s *FieldService) Update(ctx context.Context, uuid string, req *dto.UpdateF
 	if err != nil {
 		return nil, err
 	}
-
+	uuidParsed, _ := uuid.Parse(uuidParam)
 	response := &dto.FieldResponse{
-		UUID:         field.UUID,
+		UUID:         uuidParsed,
 		Code:         field.Code,
 		Name:         field.Name,
 		PricePerHour: field.PricePerHour,
 		Images:       field.Images,
 		CreatedAt:    field.CreatedAt,
-		UpdateAt:     field.UpdatdeAt,
+		UpdateAt:     field.UpdatedAt,
 	}
 
 	return response, nil

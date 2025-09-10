@@ -67,11 +67,9 @@ func (t *TimeRepository) FindID(ctx context.Context, id int) ([]models.Time, err
 }
 
 func (t *TimeRepository) Create(ctx context.Context, req *models.Time) (*models.Time, error) {
-	time := models.Time{
-		UUID: uuid.New(),
-	}
+	req.UUID = uuid.New()
 
-	err := t.db.WithContext(ctx).Create(&time).Error
+	err := t.db.WithContext(ctx).Create(&req).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errWrap.WrapError(errTime.ErrTimeNotFound)
@@ -79,5 +77,5 @@ func (t *TimeRepository) Create(ctx context.Context, req *models.Time) (*models.
 		return nil, errWrap.WrapError(errConstant.ErrSQLError)
 	}
 
-	return &time, nil
+	return req, nil
 }
