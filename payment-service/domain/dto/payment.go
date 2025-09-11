@@ -14,7 +14,7 @@ type PaymentRequest struct {
 	Amount         float64         `json:"amount"`
 	Description    *string         `json:"description"`
 	CustomerDetail *CustomerDetail `json:"customerDetail"`
-	ItemDetail     []ItemDetail    `json:"itemDetail"`
+	ItemDetails    []ItemDetail    `json:"itemDetails"`
 }
 
 type CustomerDetail struct {
@@ -31,10 +31,10 @@ type ItemDetail struct {
 }
 
 type PaymentRequestParam struct {
-	Page       int     `fomr:"page" validate:"required"`
-	Limit      int     `fomr:"limit" validate:"required"`
-	SortColumn *string `fomr:"sortColumn"`
-	SortOrder  *string `fomr:"sortOrder"`
+	Page       int     `form:"page" binding:"required"`
+	Limit      int     `form:"limit" binding:"required"`
+	SortColumn *string `form:"sortColumn"`
+	SortOrder  *string `form:"sortOrder"`
 }
 
 type UpdatePaymentRequest struct {
@@ -54,12 +54,12 @@ type PaymentResponse struct {
 	Status        constants.PaymentStatusString `json:"status"`
 	PaymentLink   string                        `json:"paymentLink"`
 	InvoiceLink   *string                       `json:"invoiceLink,omitempty"`
-	TransactionId *string                       `json:"transactionId"`
-	VANumber      *string                       `json:"vaNumber"`
-	Bank          *string                       `json:"bank"`
-	Acquirer      *string                       `json:"acquirer"`
+	TransactionId *string                       `json:"transactionId,omitempty"`
+	VANumber      *string                       `json:"vaNumber,omitempty"`
+	Bank          *string                       `json:"bank,omitempty"`
+	Acquirer      *string                       `json:"acquirer,omitempty"`
 	Description   *string                       `json:"description"`
-	PaidAt        *time.Time                    `json:"paidAt"`
+	PaidAt        *time.Time                    `json:"paidAt,omitempty"`
 	CreatedAt     *time.Time                    `json:"createdAt"`
 	ExpireddAt    *time.Time                    `json:"expiredAt"`
 	UpdatedAt     *time.Time                    `json:"updatedAt"`
@@ -78,7 +78,7 @@ type Webhook struct {
 	PaymentAmount     []PaymentAmount               `json:"payment_amount"`
 	OrderID           uuid.UUID                     `json:"order_id"`
 	MerchantID        string                        `json:"merchant_id"`
-	GrossAmount       float64                       `json:"gross_amount"`
+	GrossAmount       string                        `json:"gross_amount"`
 	FraudStatus       string                        `json:"fraud_status"`
 	Currency          string                        `json:"currency"`
 	Acquirer          *string                       `json:"acquirer"`

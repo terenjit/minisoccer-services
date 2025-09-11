@@ -29,7 +29,7 @@ func NewPaymentController(service services.IServiceRegistry) IPaymentController 
 
 func (p *PaymentController) GetAllWithPagination(c *gin.Context) {
 	var params dto.PaymentRequestParam
-	err := c.ShouldBindQuery(params)
+	err := c.ShouldBindQuery(&params)
 	if err != nil {
 		response.HttpResponse(response.ParamHTTPResp{
 			Code: http.StatusBadRequest,

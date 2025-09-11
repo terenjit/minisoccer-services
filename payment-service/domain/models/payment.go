@@ -20,9 +20,9 @@ type Payment struct {
 	Acquirer         *string                  `gorm:"type:varchar(100);default:null"`
 	TransactionID    *string                  `gorm:"type:varchar(100);default:null"`
 	Description      *string                  `gorm:"type:text;default:null"`
-	PaidAt           *time.Time               `gorm:"type:timestamp"`
-	ExpiredAt        time.Time                `gorm:"type:timestamp;default:null"`
-	CreatedAt        time.Time                `gorm:"type:timestamp;default:null"`
-	UpdatedAt        time.Time                `gorm:"type:timestamp;default:null"`
-	PaymentHistories []PaymentHistory         `gorm:"foreignKey:payment_id;references:id;constraint:onUpdate:CASCADE,onDelete:CASCADE;"`
+	PaidAt           *time.Time
+	ExpiredAt        time.Time
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+	PaymentHistories []PaymentHistory `gorm:"foreignKey:payment_id;references:id;constraint:onUpdate:CASCADE,onDelete:CASCADE;"`
 }

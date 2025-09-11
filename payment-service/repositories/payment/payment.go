@@ -49,7 +49,7 @@ func (p *PaymentRepository) FindAllWithPagination(c context.Context, param *dto.
 	limit := param.Limit
 	offset := (param.Page - 1) * limit
 
-	err := p.db.WithContext(c).Limit(limit).Offset(offset).Order(sort).Find(&payments).Error
+	err := p.db.Debug().WithContext(c).Limit(limit).Offset(offset).Order(sort).Find(&payments).Error
 	if err != nil {
 		return nil, 0, errWrap.WrapError(errConstant.ErrSQLError)
 	}

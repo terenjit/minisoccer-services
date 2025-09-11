@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
@@ -69,7 +70,17 @@ func validateAPIKEY(c *gin.Context) error {
 	apiKey := c.GetHeader(constants.XApiKey)
 	requestAt := c.GetHeader(constants.XrequestAt)
 	serviceName := c.GetHeader(constants.XserviceName)
-	signatureKey := config.Cfg.SignatureKey
+	//signatureKey := config.Cfg.SignatureKey
+
+	var signatureKey string
+	switch serviceName {
+	case "field-services":
+		signatureKey = config.Cfg.SignatureKey
+	case "user-services":
+		signatureKey = config.Cfg.InternalService.User.SignatureKey
+	default:
+		return errConstant.ErrUnauthorized
+	}
 
 	validateKey := fmt.Sprintf("%s:%s:%s", serviceName, signatureKey, requestAt)
 	hash := sha256.New()
@@ -123,6 +134,9 @@ func Authenticate() gin.HandlerFunc {
 			return
 		}
 
+		tokenString := extractBearerToken(token)
+		tokenUser := ctx.Request.WithContext(context.WithValue(ctx.Request.Context(), constants.Token, tokenString))
+		ctx.Request = tokenUser
 		ctx.Next()
 	}
 }

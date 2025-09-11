@@ -178,20 +178,13 @@ func (p *PaymentService) ConvertToIndonesianMonth(english string) string {
 }
 
 func (p *PaymentService) generatePDF(req *dto.InvoiceRequest) ([]byte, error) {
-	htmlTempPath := "template/incovice.html"
+	htmlTempPath := "template/invoice.html"
 	htmpTemp, err := os.ReadFile(htmlTempPath)
 	if err != nil {
 		return nil, err
 	}
 
-	var data map[string]interface{}
-	jsonData, _ := json.Marshal(req)
-	err = json.Unmarshal(jsonData, data)
-	if err != nil {
-		return nil, err
-	}
-
-	pdf, err := util.GeneratePDFfromHTML(string(htmpTemp), data)
+	pdf, err := util.GeneratePDFfromHTML(string(htmpTemp))
 	if err != nil {
 		return nil, err
 	}
@@ -248,6 +241,7 @@ func (p *PaymentService) ProduceToKafka(req *dto.Webhook, payment *models.Paymen
 			PaymentID: payment.UUID,
 			Status:    string(req.TransactionStatus),
 			PaidAt:    paidAt,
+			ExpiredAt: payment.ExpiredAt,
 		},
 	}
 
@@ -289,7 +283,7 @@ func (p *PaymentService) Webhook(c context.Context, req *dto.Webhook) error {
 		status := req.TransactionStatus.GetStatusInt()
 		vaNumber := req.VANumbers[0].VaNumber
 		bank := req.VANumbers[0].Bank
-		paymentAfterUpdate, txErr = p.repository.GetPayment().Update(c, tx, req.OrderID.String(), &dto.UpdatePaymentRequest{
+		_, txErr = p.repository.GetPayment().Update(c, tx, req.OrderID.String(), &dto.UpdatePaymentRequest{
 			TransactionId: &req.TransactionID,
 			Status:        &status,
 			PaidAt:        paidAt,
@@ -297,7 +291,11 @@ func (p *PaymentService) Webhook(c context.Context, req *dto.Webhook) error {
 			Bank:          &bank,
 			Acquirer:      req.Acquirer,
 		})
+		if txErr != nil {
+			return txErr
+		}
 
+		paymentAfterUpdate, txErr = p.repository.GetPayment().FindByOrderID(c, req.OrderID.String())
 		if txErr != nil {
 			return txErr
 		}

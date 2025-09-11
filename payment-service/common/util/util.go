@@ -1,21 +1,24 @@
 package util
 
 import (
-	"bytes"
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"html/template"
 	"math"
+	"net/url"
 	"os"
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 
-	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
 	"github.com/dustin/go-humanize"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+
+	"github.com/chromedp/cdproto/page"
+	"github.com/chromedp/chromedp"
 )
 
 type PaginationParam struct {
@@ -176,39 +179,35 @@ func add1(a int) int {
 	return a + 1
 }
 
-func GeneratePDFfromHTML(htmlTemp string, data any) ([]byte, error) {
-	funcMap := template.FuncMap{
-		"add1": add1,
-	}
+func GeneratePDFfromHTML(htmlContent string) ([]byte, error) {
+	// Create Chrome instance
+	ctx, cancel := chromedp.NewContext(context.Background())
+	defer cancel()
 
-	template, err := template.New("htmlTemplate").Funcs(funcMap).Parse(htmlTemp)
+	// Set timeout (important for server use)
+	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+
+	var pdfBuf []byte
+
+	// Convert HTML to a data URL so Chrome can render it
+	dataURL := "data:text/html," + url.PathEscape(htmlContent)
+
+	err := chromedp.Run(ctx,
+		chromedp.Navigate(dataURL),
+		chromedp.ActionFunc(func(ctx context.Context) error {
+			var err error
+			pdfBuf, _, err = page.PrintToPDF().
+				WithPrintBackground(true). // keep background colors/images
+				WithPaperWidth(8.27).      // A4 size
+				WithPaperHeight(11.7).     // A4 size
+				Do(ctx)
+			return err
+		}),
+	)
 	if err != nil {
 		return nil, err
 	}
 
-	var filledTemp bytes.Buffer
-	if err := template.Execute(&filledTemp, data); err != nil {
-		return nil, err
-	}
-	htmlCOntent := filledTemp.String()
-
-	pdfGenerator, err := wkhtmltopdf.NewPDFGenerator()
-	if err != nil {
-		logrus.Errorf("failed to create pdf generator: %v", err)
-		return nil, err
-	}
-
-	pdfGenerator.Dpi.Set(600)
-	pdfGenerator.NoCollate.Set(false)
-	pdfGenerator.Orientation.Set(wkhtmltopdf.OrientationPortrait)
-	pdfGenerator.PageSize.Set(wkhtmltopdf.PageSizeA4)
-	pdfGenerator.Grayscale.Set(false)
-	pdfGenerator.AddPage(wkhtmltopdf.NewPageReader(strings.NewReader(htmlCOntent)))
-	err = pdfGenerator.Create()
-	if err != nil {
-		logrus.Errorf("failed to create pdf: %v", err)
-		return nil, err
-	}
-
-	return pdfGenerator.Bytes(), err
+	return pdfBuf, nil
 }
