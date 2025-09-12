@@ -26,7 +26,7 @@ func (k *Kafka) Register() {
 }
 
 func (k *Kafka) PaymendHandler() {
-	if slices.Contains(config.Cfg.Kafka.Topic, paymentKafka.PaymentTopic) {
+	if slices.Contains(config.Cfg.Kafka.Topics, paymentKafka.PaymentTopic) {
 		k.consumer.RegisterHandler(paymentKafka.PaymentTopic, k.kafka.GetPayment().HandlePayment)
 	}
 }

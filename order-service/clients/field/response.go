@@ -15,7 +15,7 @@ type FieldResponse struct {
 
 type FieldData struct {
 	UUID         uuid.UUID  `json:"uuid"`
-	FieldName    string     `json:"name"`
+	FieldName    string     `json:"FieldName"`
 	PricePerHour float64    `json:"pricePerHour"`
 	Date         string     `json:"date"`
 	StartTime    string     `json:"startTime"`

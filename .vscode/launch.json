@@ -22,6 +22,28 @@
         "GIN_MODE": "debug"
       },
       "args": []
+    },
+    {
+      "name": "Launch Payment Service",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/payment-service",
+      "env": {
+        "GIN_MODE": "debug"
+      },
+      "args": []
+    },
+    {
+      "name": "Launch Order Service",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/order-service",
+      "env": {
+        "GIN_MODE": "debug"
+      },
+      "args": []
     }
   ],
   "compounds": [
@@ -29,7 +51,9 @@
       "name": "Debug Both Services",
       "configurations": [
         "Launch Field Service",
-        "Launch User Service"
+        "Launch User Service",
+        "Launch Payment Service",
+        "Launch Order Service"
       ]
     }
   ]

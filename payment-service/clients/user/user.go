@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"payment-service/clients/config"
 	"payment-service/common/util"
+	Cfg "payment-service/config"
 	"payment-service/constants"
 	"time"
 
@@ -53,7 +54,7 @@ func NewUserClient(client config.IClientConfig) IUserClient {
 
 func (u *UserClient) GetUserByToken(ctx context.Context) (*UserData, error) {
 	unixTime := time.Now().Unix()
-	generateApikey := fmt.Sprintf("%s:%s:%d", "user-services", u.client.SignatureKey(), unixTime)
+	generateApikey := fmt.Sprintf("%s:%s:%d", "user-services", Cfg.Cfg.InternalService.User.SignatureKey, unixTime)
 	apiKey := util.GenerateSHA256(generateApikey)
 	token := ctx.Value(constants.Token).(string)
 	bearerToken := fmt.Sprintf("Bearer %s", token)

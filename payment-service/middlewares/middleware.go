@@ -74,7 +74,7 @@ func validateAPIKEY(c *gin.Context) error {
 
 	var signatureKey string
 	switch serviceName {
-	case "field-services":
+	case "payment-services":
 		signatureKey = config.Cfg.SignatureKey
 	case "user-services":
 		signatureKey = config.Cfg.InternalService.User.SignatureKey

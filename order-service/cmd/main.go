@@ -124,7 +124,7 @@ func serveKafkaConsumer(service services.IServiceRegistry) {
 
 	brokers := config.Cfg.Kafka.Brokers
 	groupID := config.Cfg.Kafka.GroupID
-	topics := config.Cfg.Kafka.Topic
+	topics := config.Cfg.Kafka.Topics
 	consumerGroup, err := sarama.NewConsumerGroup(brokers, groupID, kafkaConsumerCfg)
 	if err != nil {
 		logrus.Errorf("failed to create consumer group: %v", err)

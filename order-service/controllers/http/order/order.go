@@ -137,7 +137,7 @@ func (o *OrderController) Create(c *gin.Context) {
 		return
 	}
 
-	result, err := o.service.GetOrder().Create(c, &req)
+	result, err := o.service.GetOrder().Create(c.Request.Context(), &req)
 	if err != nil {
 		response.HttpResponse(response.ParamHTTPResp{
 			Code: http.StatusBadRequest,
