@@ -179,9 +179,54 @@ func add1(a int) int {
 	return a + 1
 }
 
+// func GeneratePDFfromHTML(htmlContent string) ([]byte, error) {
+// 	// Create Chrome instance
+// 	ctx, cancel := chromedp.NewContext(context.Background())
+// 	defer cancel()
+
+// 	// Set timeout (important for server use)
+// 	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
+// 	defer cancel()
+
+// 	var pdfBuf []byte
+
+// 	// Convert HTML to a data URL so Chrome can render it
+// 	dataURL := "data:text/html," + url.PathEscape(htmlContent)
+
+// 	err := chromedp.Run(ctx,
+// 		chromedp.Navigate(dataURL),
+// 		chromedp.ActionFunc(func(ctx context.Context) error {
+// 			var err error
+// 			pdfBuf, _, err = page.PrintToPDF().
+// 				WithPrintBackground(true). // keep background colors/images
+// 				WithPaperWidth(8.27).      // A4 size
+// 				WithPaperHeight(11.7).     // A4 size
+// 				Do(ctx)
+// 			return err
+// 		}),
+// 	)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	return pdfBuf, nil
+// }
+
 func GeneratePDFfromHTML(htmlContent string) ([]byte, error) {
+	// Set Chrome options (important for Docker/Alpine)
+	opts := append(chromedp.DefaultExecAllocatorOptions[:],
+		chromedp.Flag("headless", true),
+		chromedp.Flag("disable-gpu", true),
+		chromedp.Flag("no-sandbox", true),
+		chromedp.ExecPath("/usr/bin/chromium-browser"), // path inside container
+	)
+
+	// Create allocator context with those options
+	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
+	defer cancel()
+
 	// Create Chrome instance
-	ctx, cancel := chromedp.NewContext(context.Background())
+	ctx, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
 
 	// Set timeout (important for server use)
