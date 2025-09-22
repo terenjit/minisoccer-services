@@ -22,7 +22,7 @@ RUN apk update && apk upgrade && \
 
 WORKDIR /app
 
-EXPOSE 8001
+EXPOSE 8002
 
 COPY --from=builder /app/field-service /app/field-service
 
