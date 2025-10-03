@@ -58,12 +58,12 @@ func NewPaymentClient(client config.IClientConfig) IPaymentClient {
 
 func (p *PaymentClient) GetPaymentUUID(c context.Context, uuid uuid.UUID) (*PaymentData, error) {
 	unixTime := time.Now().Unix()
-	generateApikey := fmt.Sprintf("%s:%s:%d", "paymemt-services", config2.Cfg.InternalService.Payment.SignatureKey, unixTime)
+	generateApikey := fmt.Sprintf("%s:%s:%d", "payment-services", config2.Cfg.InternalService.Payment.SignatureKey, unixTime)
 	apiKey := util.GenerateSHA256(generateApikey)
 	token := c.Value(constants.Token).(string)
 	bearerToken := fmt.Sprintf("Bearer %s", token)
 
-	req, _ := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/payment/%s", "http://localhost:8003", uuid), nil)
+	req, _ := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/payment/%s", config2.Cfg.InternalService.Payment.Host, uuid), nil)
 	req.Header.Set("Authorization", bearerToken)
 	req.Header.Set(constants.XApiKey, apiKey)
 	req.Header.Set(constants.XrequestAt, fmt.Sprintf("%d", unixTime))
@@ -136,7 +136,7 @@ func (p *PaymentClient) CreatePaymentLink(c context.Context, request *dto.Paymen
 		return nil, err
 	}
 
-	req, _ := http.NewRequest("POST", fmt.Sprintf("%s/api/v1/payment", "http://localhost:8003"), bytes.NewBuffer(body))
+	req, _ := http.NewRequest("POST", fmt.Sprintf("%s/api/v1/payment", config2.Cfg.InternalService.Payment.Host), bytes.NewBuffer(body))
 	req.Header.Set("Authorization", bearerToken)
 	req.Header.Set(constants.XApiKey, apiKey)
 	req.Header.Set(constants.XrequestAt, fmt.Sprintf("%d", unixTime))

@@ -37,7 +37,7 @@ func (f *FieldClient) GetFieldByUUID(c context.Context, uuid uuid.UUID) (*FieldD
 	token := c.Value(constants.Token).(string)
 	bearerToken := fmt.Sprintf("Bearer %s", token)
 
-	req, _ := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/field/schedule/%s", "http://localhost:8002", uuid), nil)
+	req, _ := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/field/schedule/%s", Cfg.Cfg.InternalService.Field.Host, uuid), nil)
 	req.Header.Set("Authorization", bearerToken)
 	req.Header.Set(constants.XApiKey, apiKey)
 	req.Header.Set(constants.XrequestAt, fmt.Sprintf("%d", unixTime))
@@ -131,7 +131,7 @@ func (f *FieldClient) UpdateStatus(request *dto.UpdateFieldScheduleStatusRequest
 		return err
 	}
 
-	req, _ := http.NewRequest("PATCH", fmt.Sprintf("%s/api/v1/field/schedule/status", f.client.BaseURL()), bytes.NewBuffer(body))
+	req, _ := http.NewRequest("PATCH", fmt.Sprintf("%s/api/v1/field/schedule/status", Cfg.Cfg.InternalService.Field.Host), bytes.NewBuffer(body))
 	//req.Header.Set("Authorization", bearerToken)
 	req.Header.Set(constants.XApiKey, apiKey)
 	req.Header.Set(constants.XrequestAt, fmt.Sprintf("%d", unixTime))
