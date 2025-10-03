@@ -93,7 +93,7 @@ func (s *FieldScheduleService) converOneMonthName(inputmonth string) string {
 }
 
 func (s *FieldScheduleService) GetAllFieldIdAndDate(ctx context.Context, uuid string, date string) ([]dto.FieldScheduleForBookResponse, error) {
-	FieldSchedules, err := s.repository.GetFieldSchedule().FindByUUID(ctx, uuid)
+	FieldSchedules, err := s.repository.GetField().FindByUUID(ctx, uuid)
 	if err != nil {
 		return nil, err
 	}

@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"encoding/base64"
 	"field-service/clients"
 	"field-service/common/gcs"
 	"field-service/common/response"
@@ -72,7 +71,7 @@ var command = &cobra.Command{
 
 		router.Use(func(c *gin.Context) {
 			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-			c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH")
+			c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS")
 			c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, x-service-name, x-request-at, x-api-key")
 			if c.Request.Method == "OPTIONS" {
 				c.AbortWithStatus(204)
@@ -105,16 +104,17 @@ func Run() {
 }
 
 func initGCS() gcs.IGCSClient {
-	decode, err := base64.StdEncoding.DecodeString(config.Cfg.GcsPrivateKey)
-	if err != nil {
-		panic(err)
-	}
+	// decode, err := base64.StdEncoding.DecodeString(config.Cfg.GcsPrivateKey)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	stringPrivateKey := string(decode)
+	// stringPrivateKey := string(decode)
 	gcsServiceAccount := gcs.ServiceAccountKeyJSON{
 		Type:                    config.Cfg.GcsType,
 		ProjectID:               config.Cfg.GcsProjectID,
-		PrivateKeyID:            stringPrivateKey,
+		PrivateKeyID:            config.Cfg.GcsPrivateKeyID,
+		PrivateKey:              config.Cfg.GcsPrivateKey,
 		ClientEmail:             config.Cfg.GcsClientEmail,
 		ClientID:                config.Cfg.GcsClientID,
 		AuthURI:                 config.Cfg.GcsAuthURI,
