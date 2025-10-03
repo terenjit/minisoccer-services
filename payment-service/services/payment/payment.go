@@ -353,6 +353,11 @@ func (p *PaymentService) Webhook(c context.Context, req *dto.Webhook) error {
 		return err
 	}
 
+	paymentAfterUpdate, txErr = p.repository.GetPayment().FindByOrderID(c, req.OrderID.String())
+	if txErr != nil {
+		return txErr
+	}
+
 	err = p.ProduceToKafka(req, paymentAfterUpdate, paidAt)
 	if err != nil {
 		return err

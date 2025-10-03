@@ -209,16 +209,15 @@ func add1(a int) int {
 // 		return nil, err
 // 	}
 
-// 	return pdfBuf, nil
-// }
-
+//		return pdfBuf, nil
+//	}
 func GeneratePDFfromHTML(htmlContent string) ([]byte, error) {
 	// Set Chrome options (important for Docker/Alpine)
 	opts := append(chromedp.DefaultExecAllocatorOptions[:],
 		chromedp.Flag("headless", true),
 		chromedp.Flag("disable-gpu", true),
 		chromedp.Flag("no-sandbox", true),
-		chromedp.ExecPath("/usr/bin/chromium-browser"), // path inside container
+		chromedp.ExecPath("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"), // path inside container
 	)
 
 	// Create allocator context with those options

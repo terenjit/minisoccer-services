@@ -122,6 +122,7 @@ func (p *PaymentRepository) Create(c context.Context, tx *gorm.DB, req *dto.Paym
 func (p *PaymentRepository) Update(c context.Context, tx *gorm.DB, orderId string, req *dto.UpdatePaymentRequest) (*models.Payment, error) {
 	payment := models.Payment{
 		Status:        req.Status,
+		OrderID:       uuid.MustParse(orderId),
 		TransactionID: req.TransactionId,
 		InvoiceLink:   req.InvoiceLink,
 		PaidAt:        req.PaidAt,
