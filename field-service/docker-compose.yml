@@ -2,7 +2,7 @@ name: minisoccer-microservice-app
 services:
   field-service:
     container_name: field-service
-    # image: terenjit/field-service:1
+    image: terenjit/field-service:${BUILD_NUMBER}
     build:
       context: .
       dockerfile: Dockerfile

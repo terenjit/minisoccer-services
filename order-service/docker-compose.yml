@@ -2,7 +2,7 @@ name: minisoccer-microservice-app
 services:
   order-service:
     container_name: order-service
-    # image: terenjit/order-service:1
+    image: terenjit/order-service:${BUILD_NUMBER}
     build:
       context: .
       dockerfile: Dockerfile

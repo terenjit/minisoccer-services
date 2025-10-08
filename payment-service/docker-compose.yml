@@ -2,7 +2,7 @@ name: minisoccer-microservice-app
 services:
   payment-service:
     container_name: payment-service
-    # image: terenjit/user-service:1
+    image: terenjit/payment-service:${BUILD_NUMBER}
     build:
       context: .
       dockerfile: Dockerfile

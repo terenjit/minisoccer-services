@@ -1,8 +1,8 @@
-name: booking-field-app
+name: minisoccer-microservice-app
 services:
   mini-soccer-fe:
     container_name: mini-soccer-fe
-    image: sikoding20/mini-soccer-fe:11
+    image: terenjit/mini-soccer-fe:${BUILD_NUMBER}
     ports:
       - "3000:3000"
     environment:
