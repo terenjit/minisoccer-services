@@ -2,14 +2,10 @@ name: minisoccer-microservice-app
 services:
   user-service:
     container_name: user-service
+    platform: linux/amd64
     image: terenjit/user-service:${BUILD_NUMBER}
-    build:
-      context: .
-      dockerfile: Dockerfile
     ports:
       - "8001:8001" 
     env_file:
       - .env
-    volumes:
-      - ./config.json:/app/config.json
     
