@@ -16,31 +16,24 @@ pipeline {
 
 
   stages {
-    stage('Print Environment Variables') {
+    stage('Debug Environment') {
       steps {
-          script {
-              echo "IMAGE_NAME = ${env.IMAGE_NAME}"
-              echo "GIT_BRANCH = ${env.GIT_BRANCH}"
-              echo "TARGET_BRANCH = ${env.TARGET_BRANCH}"
+            script {
+                echo "HOST = ${HOST}"                 // This is usually safe to print
+                echo "USERNAME = ${USERNAME}"         // Safe
+                echo "TARGET_BRANCH = ${TARGET_BRANCH}"  
+                echo "IMAGE_NAME = ${IMAGE_NAME}"
 
-              // For credentials, print only username or if value exists
-              echo "DOCKER_USERNAME = ${DOCKER_CREDENTIALS_USR}"
-              echo "DOCKER_PASSWORD is set? = ${DOCKER_CREDENTIALS_PSW ? 'YES' : 'NO'}"
-
-              echo "GITHUB_USERNAME = ${GITHUB_CREDENTIALS_USR}"
-              echo "GITHUB_PASSWORD is set? = ${GITHUB_CREDENTIALS_PSW ? 'YES' : 'NO'}"
-
-              echo "SSH_KEY is set? = ${SSH_KEY ? 'YES' : 'NO'}"
-              echo "HOST = ${HOST}"
-              echo "USERNAME = ${USERNAME}"
-
-              echo "CONSUL_HTTP_URL = ${CONSUL_HTTP_URL}"
-              echo "CONSUL_HTTP_KEY = ${CONSUL_HTTP_KEY}"
-              echo "CONSUL_HTTP_TOKEN is set? = ${CONSUL_HTTP_TOKEN ? 'YES' : 'NO'}"
-              echo "CONSUL_WATCH_INTERVAL_SECONDS = ${CONSUL_WATCH_INTERVAL_SECONDS}"
-          }
-      }
+                // Secrets — don’t print actual value, just check if set
+                echo "SSH_KEY is set? = ${SSH_KEY ? 'YES' : 'NO'}"
+                echo "DOCKER_CREDENTIALS is set? = ${DOCKER_CREDENTIALS ? 'YES' : 'NO'}"
+                echo "GITHUB_CREDENTIALS is set? = ${GITHUB_CREDENTIALS ? 'YES' : 'NO'}"
+                echo "CONSUL_HTTP_TOKEN is set? = ${CONSUL_HTTP_TOKEN ? 'YES' : 'NO'}"
+                echo "CONSUL_HTTP_URL is set? = ${CONSUL_HTTP_URL ? 'YES' : 'NO'}"
+            }
+        }
     }
+
 
     stage('Check Commit Message') {
       steps {
