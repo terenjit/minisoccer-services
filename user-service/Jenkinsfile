@@ -127,7 +127,6 @@ pipeline {
       steps {
         script {
           def targetDir = "/home/terenjitsingh/minisoccer-microservices/user-service"
-
           // Use withCredentials to safely access SSH key and other secrets
           withCredentials([
             sshUserPrivateKey(credentialsId: 'ssh-key', keyFileVariable: 'SSH_KEY_FILE', usernameVariable: 'SSH_USER'),
