@@ -125,87 +125,31 @@ pipeline {
 
     stage('Deploy to Remote Server') {
       steps {
-          withCredentials([
-              // SSH key injected as temporary file
-              sshUserPrivateKey(
-                  credentialsId: 'ssh-key',      // Jenkins SSH credential ID
-                  keyFileVariable: 'SSH_KEY_FILE',
-                  usernameVariable: 'SSH_USER'
-              ),
-              // Host injected as string credential
-              string(credentialsId: 'host', variable: 'HOST_VAR')
-          ]) {
-              script {
-                  // Test connectivity first
-                  sh '''
-                  echo "Testing connectivity to remote server..."
-                  ping -c 3 $HOST_VAR || echo "Ping failed, but continuing..."
-                  '''
-                  
-                  // Deploy with improved SSH options
-                  sh '''
-                  echo "Starting deployment to remote server..."
+        script {
+          def targetDir = "/home/terenjitsingh/minisoccer-microservices/user-service"
+          def sshCommandToServer = """
+          ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${USERNAME}@${HOST} '
+            if [ -d "${targetDir}/.git" ]; then
+                echo "Directory exists. Pulling latest changes."
+                cd "${targetDir}"
+                git pull origin "${TARGET_BRANCH}"
+            else
+                echo "Directory does not exist. Cloning repository."
+                git clone -b "${TARGET_BRANCH}" git@github.com:terenjit/minisoccer-services.git "${targetDir}"
+                cd "${targetDir}"
+            fi
 
-                  ssh -o StrictHostKeyChecking=no \
-                      -o ConnectTimeout=30 \
-                      -o ServerAliveInterval=60 \
-                      -o ServerAliveCountMax=3 \
-                      -o UserKnownHostsFile=/dev/null \
-                      -o LogLevel=ERROR \
-                      -i $SSH_KEY_FILE $SSH_USER@$HOST_VAR '
-                      set -e  # Exit on any error
-                      
-                      echo "Connected to remote server successfully"
-                      
-                      # Set target directory on remote server
-                      TARGET_DIR=/home/terenjitsingh/minisoccer-microservices/user-service
-
-                      # Create directory if it doesn'\''t exist
-                      mkdir -p "$TARGET_DIR"
-
-                      # Clone repo if not exists, else pull latest changes
-                      if [ -d "$TARGET_DIR/.git" ]; then
-                          echo "Directory exists. Pulling latest changes."
-                          cd "$TARGET_DIR"
-                          git fetch origin
-                          git reset --hard origin/main
-                      else
-                          echo "Directory does not exist. Cloning repository."
-                          git clone -b main git@github.com:terenjit/minisoccer-services.git "$TARGET_DIR"
-                          cd "$TARGET_DIR"
-                      fi
-
-                      # Navigate to user-service directory
-                      cd user-service
-
-                      # Copy and update environment file
-                      if [ -f .env.example ]; then
-                          cp .env.example .env
-                      else
-                          echo "Warning: .env.example not found, creating basic .env file"
-                          touch .env
-                      fi
-                      
-                      # Update environment variables
-                      sed -i "s/^TIMEZONE=.*/TIMEZONE=Asia\\/Jakarta/" .env || echo "TIMEZONE=Asia/Jakarta" >> .env
-                      sed -i "s/^CONSUL_HTTP_URL=.*/CONSUL_HTTP_URL=${CONSUL_HTTP_URL}/" .env || echo "CONSUL_HTTP_URL=${CONSUL_HTTP_URL}" >> .env
-                      sed -i "s/^CONSUL_HTTP_PATH=.*/CONSUL_HTTP_PATH=backend\\/user-service/" .env || echo "CONSUL_HTTP_PATH=backend/user-service" >> .env
-                      sed -i "s/^CONSUL_HTTP_TOKEN=.*/CONSUL_HTTP_TOKEN=${CONSUL_HTTP_TOKEN}/" .env || echo "CONSUL_HTTP_TOKEN=${CONSUL_HTTP_TOKEN}" >> .env
-                      sed -i "s/^CONSUL_WATCH_INTERVAL_SECONDS=.*/CONSUL_WATCH_INTERVAL_SECONDS=${CONSUL_WATCH_INTERVAL_SECONDS}/" .env || echo "CONSUL_WATCH_INTERVAL_SECONDS=${CONSUL_WATCH_INTERVAL_SECONDS}" >> .env
-
-                      echo "Environment file updated successfully"
-
-                      # Build and run Docker Compose
-                      echo "Starting Docker Compose deployment..."
-                      sudo docker compose down || true  # Stop existing containers
-                      sudo docker compose up -d --build --force-recreate
-                      
-                      echo "Deployment completed successfully"
-                      '
-                  '''
-              }
-            }
-        }
+            cp .env.example .env
+            sed -i "s/^TIMEZONE=.*/TIMEZONE=Asia\\/Jakarta/" "${targetDir}/.env"
+            sed -i "s/^CONSUL_HTTP_URL=.*/CONSUL_HTTP_URL=${CONSUL_HTTP_URL}/" "${targetDir}/.env"
+            sed -i "s/^CONSUL_HTTP_PATH=.*/CONSUL_HTTP_PATH=backend\\/user-service/" "${targetDir}/.env"
+            sed -i "s/^CONSUL_HTTP_TOKEN=.*/CONSUL_HTTP_TOKEN=${CONSUL_HTTP_TOKEN}/" "${targetDir}/.env"
+            sed -i "s/^CONSUL_WATCH_INTERVAL_SECONDS=.*/CONSUL_WATCH_INTERVAL_SECONDS=${CONSUL_WATCH_INTERVAL_SECONDS}/" "${targetDir}/.env"
+            sudo docker compose up -d --build --force-recreate
+          '
+          """
+          sh sshCommandToServer
+      }
     }
   }
 }
