@@ -125,32 +125,50 @@ pipeline {
 
     stage('Deploy to Remote Server') {
       steps {
-        script {
-          def targetDir = "/home/terenjitsingh/minisoccer-microservices/user-service"
-          def sshCommandToServer = """
-          ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${USERNAME}@${HOST} '
-            if [ -d "${targetDir}/.git" ]; then
-                echo "Directory exists. Pulling latest changes."
-                cd "${targetDir}"
-                git pull origin "${TARGET_BRANCH}"
-            else
-                echo "Directory does not exist. Cloning repository."
-                git clone -b "${TARGET_BRANCH}" git@github.com:terenjit/minisoccer-services.git "${targetDir}"
-                cd "${targetDir}"
-            fi
+          withCredentials([
+              // Injects SSH key as a temporary file and the username
+              sshUserPrivateKey(
+                  credentialsId: 'ssh-key',       // Jenkins SSH credential ID
+                  keyFileVariable: 'SSH_KEY_FILE',
+                  usernameVariable: 'SSH_USER'
+              ),
+              // Inject host as a string credential
+              string(credentialsId: 'host', variable: 'HOST_VAR')
+          ]) {
+              sh '''
+              echo "Starting deployment to remote server..."
 
-            cp .env.example .env
-            sed -i "s/^TIMEZONE=.*/TIMEZONE=Asia\\/Jakarta/" "${targetDir}/.env"
-            sed -i "s/^CONSUL_HTTP_URL=.*/CONSUL_HTTP_URL=${CONSUL_HTTP_URL}/" "${targetDir}/.env"
-            sed -i "s/^CONSUL_HTTP_PATH=.*/CONSUL_HTTP_PATH=backend\\/user-service/" "${targetDir}/.env"
-            sed -i "s/^CONSUL_HTTP_TOKEN=.*/CONSUL_HTTP_TOKEN=${CONSUL_HTTP_TOKEN}/" "${targetDir}/.env"
-            sed -i "s/^CONSUL_WATCH_INTERVAL_SECONDS=.*/CONSUL_WATCH_INTERVAL_SECONDS=${CONSUL_WATCH_INTERVAL_SECONDS}/" "${targetDir}/.env"
-            sudo docker compose up -d --build --force-recreate
-          '
-          """
-          sh sshCommandToServer
+              # SSH into remote server using injected key and username
+              ssh -o StrictHostKeyChecking=no -i $SSH_KEY_FILE $SSH_USER@$HOST_VAR "
+                  echo Connected to $(hostname)
+
+                  TARGET_DIR=/home/terenjitsingh/minisoccer-microservices/user-service
+
+                  # Clone repository if not exists, else pull latest changes
+                  if [ -d \"$TARGET_DIR/.git\" ]; then
+                      echo \"Directory exists. Pulling latest changes.\"
+                      cd \"$TARGET_DIR\"
+                      git pull origin main
+                  else
+                      echo \"Directory does not exist. Cloning repository.\"
+                      git clone -b main git@github.com:terenjit/minisoccer-services.git \"$TARGET_DIR\"
+                      cd \"$TARGET_DIR\"
+                  fi
+
+                  # Copy and update environment file
+                  cp .env.example .env
+                  sed -i 's/^TIMEZONE=.*/TIMEZONE=Asia\\/Jakarta/' \"$TARGET_DIR/.env\"
+                  sed -i 's/^CONSUL_HTTP_URL=.*/CONSUL_HTTP_URL=${CONSUL_HTTP_URL}/' \"$TARGET_DIR/.env\"
+                  sed -i 's/^CONSUL_HTTP_PATH=.*/CONSUL_HTTP_PATH=backend\\/user-service/' \"$TARGET_DIR/.env\"
+                  sed -i 's/^CONSUL_HTTP_TOKEN=.*/CONSUL_HTTP_TOKEN=${CONSUL_HTTP_TOKEN}/' \"$TARGET_DIR/.env\"
+                  sed -i 's/^CONSUL_WATCH_INTERVAL_SECONDS=.*/CONSUL_WATCH_INTERVAL_SECONDS=${CONSUL_WATCH_INTERVAL_SECONDS}/' \"$TARGET_DIR/.env\"
+
+                  # Build and run Docker Compose
+                  sudo docker compose up -d --build --force-recreate
+              "
+              '''
+            }
         }
-      }
     }
   }
 }
