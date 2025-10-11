@@ -16,17 +16,27 @@ pipeline {
 
 
   stages {
-    stage('Debug Host and Username (Unsafe, for learning)') {
-      steps {
-          script {
-              // Access raw values (unsafe, only for learning/testing)
-              def rawHost = env.HOST.getPlainText()
-              def rawssh = env.SSH_KEY.getPlainText()
-              def rawUser = env.USERNAME.getPlainText()
-
-              echo "HOST = ${rawHost}"
-              echo "SSH = ${rawssh}"
-              echo "USERNAME = ${rawUser}"
+    stage('Debug SSH Connectivity') {
+        steps {
+            script {
+              withCredentials([
+                  sshUserPrivateKey(
+                        credentialsId: 'ssh-key', 
+                        keyFileVariable: 'SSH_KEY_FILE', 
+                        usernameVariable: 'SSH_USER'
+                    ),
+                    string(credentialsId: 'host', variable: 'HOST_VAR')
+                ]) {
+                    sh '''
+                    echo "Testing SSH connectivity..."
+                    
+                    # Test SSH connection without running anything destructive
+                    ssh -o StrictHostKeyChecking=no -i $SSH_KEY_FILE $SSH_USER@$HOST_VAR "echo Connected to $(hostname)" || echo "SSH connection failed"
+                    
+                    # Optional: check if port 22 is open
+                    nc -zv $HOST_VAR 22 || echo "Port 22 is closed"
+                    '''
+            }
           }
       }
     }
