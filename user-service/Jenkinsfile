@@ -14,7 +14,6 @@ pipeline {
     CONSUL_WATCH_INTERVAL_SECONDS = 60
   }
 
-
   stages {
     stage('Check Commit Message') {
       steps {
