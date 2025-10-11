@@ -16,22 +16,19 @@ pipeline {
 
 
   stages {
-    stage('Debug Environment') {
+    stage('Debug Host and Username (Unsafe, for learning)') {
       steps {
-            script {
-                echo "HOST = ${HOST}"                 // This is usually safe to print
-                echo "USERNAME = ${USERNAME}"         // Safe
-                echo "TARGET_BRANCH = ${TARGET_BRANCH}"  
-                echo "IMAGE_NAME = ${IMAGE_NAME}"
+          script {
+              // Access raw values (unsafe, only for learning/testing)
+              def rawHost = env.HOST.getPlainText()
+              def rawssh = env.SSH_KEY.getPlainText()
+              def rawUser = env.USERNAME.getPlainText()
 
-                // Secrets — don’t print actual value, just check if set
-                echo "SSH_KEY is set? = ${SSH_KEY ? 'YES' : 'NO'}"
-                echo "DOCKER_CREDENTIALS is set? = ${DOCKER_CREDENTIALS ? 'YES' : 'NO'}"
-                echo "GITHUB_CREDENTIALS is set? = ${GITHUB_CREDENTIALS ? 'YES' : 'NO'}"
-                echo "CONSUL_HTTP_TOKEN is set? = ${CONSUL_HTTP_TOKEN ? 'YES' : 'NO'}"
-                echo "CONSUL_HTTP_URL is set? = ${CONSUL_HTTP_URL ? 'YES' : 'NO'}"
-            }
-        }
+              echo "HOST = ${rawHost}"
+              echo "SSH = ${rawssh}"
+              echo "USERNAME = ${rawUser}"
+          }
+      }
     }
 
 
