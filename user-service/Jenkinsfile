@@ -149,6 +149,7 @@ pipeline {
           '
           """
           sh sshCommandToServer
+        }
       }
     }
   }
