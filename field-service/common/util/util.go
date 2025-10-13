@@ -113,6 +113,11 @@ func SetEnvFromCounsulKV(v *viper.Viper) error {
 			val   string
 		)
 
+		if v == nil {
+			logrus.Warnf("key %s has nil value in consul, skipping", k)
+			continue
+		}
+
 		switch valOf.Kind() {
 		case reflect.String:
 			val = valOf.String()
@@ -127,12 +132,13 @@ func SetEnvFromCounsulKV(v *viper.Viper) error {
 		case reflect.Bool:
 			val = strconv.FormatBool(valOf.Bool())
 		default:
-			panic("unsupported type")
+			logrus.Warnf("skipping complex consul key %s (type: %T)", k, v)
+			continue
 		}
 
 		err = os.Setenv(k, val)
 		if err != nil {
-			logrus.Errorf("failed to set env: %v", err)
+			logrus.Errorf("failed to set env for key %s: %v", k, err)
 			return err
 		}
 	}
