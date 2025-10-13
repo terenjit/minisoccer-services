@@ -3,7 +3,7 @@ services:
   user-service:
     container_name: user-service
     platform: linux/amd64
-    image: terenjit/user-service:45
+    image: terenjit/user-service:48
     ports:
       - "8001:8001" 
     env_file:
