@@ -1,35 +1,44 @@
 FROM golang:1.24.0-alpine3.20 AS builder
 
-RUN apk add --no-cache \
-    git \
-    build-base \
-    ca-certificates
+RUN mkdir /app
+RUN apk update && \
+    apk add --no-cache git openssh tzdata build-base python3 net-tools
+
+RUN  apk update && apk add --no-cache \
+      libstdc++ \
+      libx11 \
+      libxrender \
+      libxext \
+      libressl \
+      ca-certificates \
+      fontconfig \
+      freetype \
+      ttf-dejavu \
+      ttf-droid \
+      ttf-freefont \
+      ttf-liberation \
+    && apk add --no-cache --virtual .build-deps \
+      msttcorefonts-installer \
+    \
+    # Install Microsoft fonts
+    && update-ms-fonts \
+    && fc-cache -f \
+    \
+    # Clean up when done
+    && rm -rf /var/cache/apk/* \
+    && rm -rf /tmp/* \
+    && apk del .build-deps
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
-RUN go mod download
-
+COPY .env.example .env
 COPY . .
-RUN go build -o payment-service ./cmd/payment-service
 
-FROM alpine:3.20
+RUN go install github.com/buu700/gin@latest
+RUN GO111MODULE=auto
+RUN go mod tidy
 
-RUN apk add --no-cache \
-    chromium \
-    nss \
-    freetype \
-    harfbuzz \
-    ca-certificates \
-    ttf-dejavu \
-    font-noto \
-    font-noto-cjk \
-    font-noto-emoji \
-    tzdata
-
-WORKDIR /app
-
-COPY --from=builder /app/payment-service /app/payment-service
+RUN make build
 
 ENV TZ=Asia/Jakarta
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
