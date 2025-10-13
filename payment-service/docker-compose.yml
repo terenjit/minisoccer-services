@@ -2,14 +2,9 @@ name: minisoccer-microservice-app
 services:
   payment-service:
     container_name: payment-service
-    image: terenjit/payment-service:${BUILD_NUMBER}
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: terenjit/payment-service:1
     ports:
       - "8003:8003" 
     env_file:
       - .env
-    volumes:
-      - ./config.json:/app/config.json
     
