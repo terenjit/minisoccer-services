@@ -2,14 +2,9 @@ name: minisoccer-microservice-app
 services:
   order-service:
     container_name: order-service
-    image: terenjit/order-service:${BUILD_NUMBER}
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: terenjit/order-service:1
     ports:
       - "8004:8004" 
     env_file:
       - .env
-    volumes:
-      - ./config.json:/app/config.json
     
