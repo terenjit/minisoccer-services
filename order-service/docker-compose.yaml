@@ -2,7 +2,7 @@ name: minisoccer-microservice-app
 services:
   order-service:
     container_name: order-service
-    image: terenjit/order-service:46
+    image: terenjit/order-service:51
     ports:
       - "8004:8004" 
     env_file:
