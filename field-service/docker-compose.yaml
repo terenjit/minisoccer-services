@@ -3,7 +3,7 @@ services:
   field-service:
     container_name: field-service
     platform: linux/amd64
-    image: terenjit/field-service:38
+    image: terenjit/field-service:41
     ports:
       - "8002:8002" 
     env_file:
