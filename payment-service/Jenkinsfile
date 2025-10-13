@@ -143,7 +143,7 @@ pipeline {
             sed -i "s/^TIMEZONE=.*/TIMEZONE=Asia\\/Jakarta/" .env
             sed -i "s/^CONSUL_HTTP_URL=.*/CONSUL_HTTP_URL=${CONSUL_HTTP_URL}/" .env
             sed -i "s/^CONSUL_HTTP_KEY=.*/CONSUL_HTTP_KEY=backend\\/payment-service/" .env
-            sed -i "s/^CONSUL_HTTP_TOKEN=.*/CONSUL_HTTP_TOKEN=${CONSUL_HTTP_TOKEN}/" ".env
+            sed -i "s/^CONSUL_HTTP_TOKEN=.*/CONSUL_HTTP_TOKEN=${CONSUL_HTTP_TOKEN}/" .env
             sed -i "s/^CONSUL_WATCH_INTERVAL_SECONDS=.*/CONSUL_WATCH_INTERVAL_SECONDS=${CONSUL_WATCH_INTERVAL_SECONDS}/" .env
             sudo docker compose up -d --build --force-recreate
           '
