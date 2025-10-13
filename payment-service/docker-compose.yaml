@@ -2,7 +2,7 @@ name: minisoccer-microservice-app
 services:
   payment-service:
     container_name: payment-service
-    image: terenjit/payment-service:45
+    image: terenjit/payment-service:47
     ports:
       - "8003:8003" 
     env_file:
