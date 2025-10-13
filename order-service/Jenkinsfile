@@ -138,7 +138,7 @@ pipeline {
                 cd "${targetDir}"
             fi
 
-            cd order-service
+            cd order-service 
             cp .env.example .env
             sed -i "s/^TIMEZONE=.*/TIMEZONE=Asia\\/Jakarta/" .env
             sed -i "s/^CONSUL_HTTP_URL=.*/CONSUL_HTTP_URL=${CONSUL_HTTP_URL}/" .env
